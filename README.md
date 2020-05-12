@@ -12,6 +12,8 @@ To enter the boundry call `enter` with the function you want to run inside it. O
 npm install --save @tjenkinson/boundary
 ```
 
+or available on JSDelivr at "https://cdn.jsdelivr.net/npm/@tjenkinson/boundary@1".
+
 ## Example
 
 ```ts
