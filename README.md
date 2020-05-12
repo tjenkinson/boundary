@@ -1,3 +1,5 @@
+[![npm version](https://badge.fury.io/js/%40tjenkinson%2Fboundary.svg)](https://badge.fury.io/js/%40tjenkinson%2Fboundary)
+
 # Boundary
 
 A boundary represents everything below a given point in the call stack.
