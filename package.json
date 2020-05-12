@@ -1,6 +1,6 @@
 {
   "name": "@tjenkinson/boundary",
-  "version": "0.0.1",
+  "version": "1.0.0",
   "description": "A boundary represents everything below a given point in the call stack and notifies you on entry and exit.",
   "main": "dist/boundary.js",
   "types": "dist/boundary.d.ts",
