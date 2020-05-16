@@ -2,7 +2,8 @@
   "name": "@tjenkinson/boundary",
   "version": "1.1.0",
   "description": "A boundary represents everything below a given point in the call stack and notifies you on entry and exit.",
-  "main": "dist/boundary.js",
+  "main": "dist/boundary.es.js",
+  "browser": "dist/boundary.js",
   "types": "dist/boundary.d.ts",
   "scripts": {
     "build": "rm -rf dist && rollup --config rollup.config.js",

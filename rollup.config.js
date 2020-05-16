@@ -6,9 +6,15 @@ export default {
   onwarn: (e) => {
     throw new Error(e);
   },
-  output: {
-    name: 'OnExit',
-    file: 'dist/boundary.js',
-    format: 'umd',
-  },
+  output: [
+    {
+      name: 'OnExit',
+      file: 'dist/boundary.js',
+      format: 'umd',
+    },
+    {
+      file: 'dist/boundary.es.js',
+      format: 'es',
+    },
+  ],
 };
