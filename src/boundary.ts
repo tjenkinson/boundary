@@ -1,4 +1,5 @@
 import { CannotEnterError } from './boundary-error';
+export { CannotEnterError } from './boundary-error';
 
 export type OnEnterCallback<OnEnterReturnType> = () => OnEnterReturnType;
 
