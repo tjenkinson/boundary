@@ -8,6 +8,8 @@ It can have an `onEnter` function which is called on entry and an `onExit` funct
 
 To enter the boundry call `enter` with the function you want to run inside it. On the first call to `enter` in the current stack `onEnter` will be called before the provided function and `onExit` will be called after it. You can return a value from `onEnter` which will be passed to all the `enter` and `onExit` calls.
 
+See https://github.com/tjenkinson/state-manager for a use case of this.
+
 ## Installation
 
 ```sh
