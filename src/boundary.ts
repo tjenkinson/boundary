@@ -1,13 +1,10 @@
-import { CannotEnterError } from './boundary-error';
-export { CannotEnterError } from './boundary-error';
-
 export type OnEnterCallback<OnEnterReturnType> = () => OnEnterReturnType;
 
 export type OnExitCallback<OnEnterReturnType> = (
   input: OnExitInput<OnEnterReturnType>
 ) => void;
 export type OnExitInput<OnEnterReturnType> = {
-  onEnterResult: OnEnterReturnType;
+  onEnterResult: OnEnterReturnType | undefined;
   exceptionOccurred: boolean;
   retrieveException: () => any;
 };
@@ -22,7 +19,6 @@ export type OnExitOptions<OnEnterReturnType> = {
 };
 
 type Execution<OnEnterReturnType> = {
-  inOnEnter: boolean;
   onEnterResult: OnEnterReturnType;
 };
 
@@ -39,7 +35,8 @@ type Execution<OnEnterReturnType> = {
  * Nested `enter` calls will be called immediately.
  *
  * The function provided to `enter` will receive the return value from `onEnter`
- * as the first argument.
+ * as the first argument. This will be `undefined` if the `onEnter` function is still
+ * executing.
  *
  * `onExit` will receive the the return value from `onEnter` and also the exception
  * if one is thrown from an `enter` call. It can choose to handle it, or leave it
@@ -57,7 +54,8 @@ export class Boundary<OnEnterReturnType = void> {
    * - onExit (optional): A function that is called immediately after leaving the
    *                      boundary. It receives an object that contains the following
    *                      properties:
-   *                      - onEnterResult: The return value from `onEnter`.
+   *                      - onEnterResult: The return value from `onEnter`. This will be
+   *                                       `undefined` if `onEnter` threw an exception.
    *                      - exceptionOccurred: `true` if an exception occured inside
    *                                           the boundary.
    *                      - retrieveException: A function that returns the exception
@@ -98,38 +96,26 @@ export class Boundary<OnEnterReturnType = void> {
   public enter<T>(fn: EnterCallback<OnEnterReturnType, T>): T;
   public enter<T>(fn?: EnterCallback<OnEnterReturnType, T>): T | void {
     if (this._execution) {
-      if (this._execution.inOnEnter) {
-        throw CannotEnterError;
-      }
       return fn ? fn(this._execution.onEnterResult) : undefined;
     }
 
     const execution: Execution<OnEnterReturnType> = (this._execution = {
-      inOnEnter: true,
       onEnterResult: undefined as any,
     });
-
-    if (this._onEnter) {
-      try {
-        // if this throws we don't consider execution as having started
-        execution.onEnterResult = this._onEnter();
-      } catch (e) {
-        this._execution = null;
-        throw e;
-      }
-    }
-    execution.inOnEnter = false;
 
     let returnVal: T = undefined as any;
     let exceptionOccurred = false;
     let exception: any = undefined;
-    if (fn) {
-      try {
-        returnVal = fn(execution.onEnterResult);
-      } catch (e) {
-        exceptionOccurred = true;
-        exception = e;
+    try {
+      if (this._onEnter) {
+        execution.onEnterResult = this._onEnter();
       }
+      if (fn) {
+        returnVal = fn(execution.onEnterResult);
+      }
+    } catch (e) {
+      exceptionOccurred = true;
+      exception = e;
     }
     this._execution = null;
 
