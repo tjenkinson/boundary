@@ -1,5 +1,4 @@
 import { Boundary } from './boundary';
-import { CannotEnterError } from './boundary-error';
 
 describe('Boundary', () => {
   describe('with neither onEnter or onExit', () => {
@@ -77,7 +76,7 @@ describe('Boundary', () => {
       });
     });
 
-    it('stops on error fron onEnter', (done) => {
+    it('stops on error from onEnter', (done) => {
       const mockError = Symbol('mockError');
       const spy = jest.fn();
 
@@ -120,18 +119,19 @@ describe('Boundary', () => {
       expect(spy).toBeCalledTimes(1);
     });
 
-    it('throws on new entry from onEnter', () => {
+    it('allows new entry from onEnter', () => {
       const mockResult = Symbol('mockResult');
-      let nestedSuccess = false;
       const boundary = new Boundary({
         onEnter: () => {
           boundary.enter((onEnterResult) => {
-            expect(onEnterResult).toBe(mockResult);
-            nestedSuccess = true;
+            expect(onEnterResult).toBe(undefined);
           });
+          return mockResult;
         },
       });
-      expect(() => boundary.enter()).toThrowError(CannotEnterError);
+      boundary.enter((onEnterResult) => {
+        expect(onEnterResult).toBe(mockResult);
+      });
     });
   });
 
@@ -139,7 +139,9 @@ describe('Boundary', () => {
     it('calls onExit when all other callbacks have finished', () => {
       const onExitCallback = jest.fn();
       let callbacksSucceeded = false;
-      const boundary = new Boundary({ onExit: onExitCallback });
+      const boundary = new Boundary({
+        onExit: onExitCallback,
+      });
       boundary.enter(() => {
         boundary.enter(() => {
           expect(onExitCallback).toHaveBeenCalledTimes(0);
@@ -154,7 +156,9 @@ describe('Boundary', () => {
       const onExitCallback = jest.fn();
       const spy1 = jest.fn();
       const spy2 = jest.fn();
-      const boundary = new Boundary({ onExit: onExitCallback });
+      const boundary = new Boundary({
+        onExit: onExitCallback,
+      });
       boundary.enter(spy1);
       expect(spy1).toHaveBeenCalledTimes(1);
       expect(onExitCallback).toHaveBeenCalledTimes(1);
@@ -183,6 +187,37 @@ describe('Boundary', () => {
       });
 
       boundary.enter(() => {});
+    });
+
+    it('provides `exceptionOccurred` as true if one occurred in onEnter and rethrows it', (done) => {
+      const mockError = Symbol('mockError');
+      const boundary = new Boundary({
+        onEnter: () => {
+          throw mockError;
+        },
+        onExit: ({ exceptionOccurred }) => {
+          expect(exceptionOccurred).toBe(true);
+        },
+      });
+
+      try {
+        boundary.enter();
+      } catch (e) {
+        expect(e).toBe(mockError);
+        done();
+      }
+    });
+
+    it('provides `undefined` as `onEnterResult` in `onExit` if `onEnter` throws', () => {
+      const mockError = Symbol('mockError');
+      new Boundary({
+        onEnter: () => {
+          throw mockError;
+        },
+        onExit: ({ onEnterResult }) => {
+          expect(onEnterResult).toBe(undefined);
+        },
+      });
     });
 
     it('provides `exceptionOccurred` as true if one occurred and rethrows it', (done) => {
