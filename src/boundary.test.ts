@@ -4,7 +4,7 @@ describe('Boundary', () => {
   describe('with neither onEnter or onExit', () => {
     let boundary: Boundary;
     beforeEach(() => {
-      boundary = new Boundary({});
+      boundary = new Boundary();
     });
 
     it('calls the callback immediately', () => {

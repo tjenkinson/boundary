@@ -67,7 +67,7 @@ export class Boundary<OnEnterReturnType = void> {
    *                      be called, and the exception will be rethrown, unless you call
    *                      `retrieveException`.
    */
-  constructor({ onEnter, onExit }: OnExitOptions<OnEnterReturnType>) {
+  constructor({ onEnter, onExit }: OnExitOptions<OnEnterReturnType> = {}) {
     this.inBoundary = this.inBoundary.bind(this);
     this.enter = this.enter.bind(this);
     this._onEnter = onEnter || null;
