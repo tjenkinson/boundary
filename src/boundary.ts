@@ -13,10 +13,17 @@ export type EnterCallback<OnEnterReturnType, ReturnType> = (
   onEnterResult: OnEnterReturnType
 ) => ReturnType;
 
-export type OnExitOptions<OnEnterReturnType> = {
+export type BoundaryOptions<OnEnterReturnType> = {
   onEnter?: OnEnterCallback<OnEnterReturnType>;
   onExit?: OnExitCallback<OnEnterReturnType>;
 };
+
+/*
+ * @deprecated
+ * Use `BoundaryOptions`
+ */
+export type OnExitOptions<OnEnterReturnType> =
+  BoundaryOptions<OnEnterReturnType>;
 
 type Execution<OnEnterReturnType> = {
   onEnterResult: OnEnterReturnType;
@@ -67,7 +74,7 @@ export class Boundary<OnEnterReturnType = void> {
    *                      be called, and the exception will be rethrown, unless you call
    *                      `retrieveException`.
    */
-  constructor({ onEnter, onExit }: OnExitOptions<OnEnterReturnType> = {}) {
+  constructor({ onEnter, onExit }: BoundaryOptions<OnEnterReturnType> = {}) {
     this.inBoundary = this.inBoundary.bind(this);
     this.enter = this.enter.bind(this);
     this._onEnter = onEnter || null;
