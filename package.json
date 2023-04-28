@@ -9,8 +9,6 @@
     "watch": "rollup --config rollup.config.mjs --watch",
     "prettier": "prettier --write .",
     "lint": "prettier --check .",
-    "prepublishOnly": "npm run build && npm test",
-    "preversion": "npm run build && npm test",
     "test": "jest",
     "prepare": "husky install"
   },

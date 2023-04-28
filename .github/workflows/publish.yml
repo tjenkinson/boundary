@@ -24,10 +24,11 @@ jobs:
         env:
           CI: true
           TAG: ${{ github.event.release.tag_name }}
-      - name: npm install and build
+      - name: npm install, build and test
         run: |
           npm ci
           npm run build
+          npm test
         env:
           CI: true
       - name: publish
